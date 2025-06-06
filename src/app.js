@@ -19,7 +19,7 @@ const corsOptions = {
   credentials: true,
 };
 
-app.use(*);
+app.use("*");
 app.use(express.json());
 
 // Serve uploaded prescription files
