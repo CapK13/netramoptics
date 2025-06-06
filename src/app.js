@@ -1,5 +1,5 @@
-// const express = require('express');
-// const dotenv = require('dotenv');
+const express = require('express');
+const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const cors = require('cors');
 var conn = null;
@@ -23,7 +23,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // Serve uploaded prescription files
-app.use(express.static('public'));
+// app.use(express.static('public'));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -31,7 +31,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/profile', require('./routes/profileRoutes'));
 
 app.get('/', (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+  res.json({ "Status": "Working" });
 });
 
 app.get("/fetchData", (req, res) => {
@@ -41,6 +41,7 @@ app.get("/fetchData", (req, res) => {
     const frames = await conn.collection('frames').find({}).toArray();
     const goggles = await conn.collection('goggles').find({}).toArray();
     const readingGlasses = await conn.collection('reading_glasses').find({}).toArray();
+
     const response = {
       frames,
       goggles,
@@ -52,8 +53,8 @@ app.get("/fetchData", (req, res) => {
   }).catch((err) => {
     console.log("connection error");
   });
-
 })
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
