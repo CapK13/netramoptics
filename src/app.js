@@ -15,7 +15,7 @@ connectDB();
 const app = express();
 
 const corsOptions = {
-  origin: 'https://www.netramoptic.com/',
+  origin: 'https://www.netramoptic.com',
   credentials: true,
 };
 
