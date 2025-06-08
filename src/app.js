@@ -15,11 +15,11 @@ connectDB();
 const app = express();
 
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: 'https://www.netramoptic.com/',
   credentials: true,
 };
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Serve uploaded prescription files
