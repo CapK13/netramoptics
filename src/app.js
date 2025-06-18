@@ -1,5 +1,6 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const mongoose = require('mongoose');
 const cors = require('cors');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
@@ -13,14 +14,14 @@ const app = express();
 connectDB();
 
 const corsOptions = {
-  origin: process.env.FRONTEND_ORIGIN || 'http://localhost:5173',
+  origin: process.env.FRONTEND_ORIGIN || 'https://www.netramoptic.com',
   credentials: true,
 };
 
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// API Routes
+// Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/profile', profileRoutes);
