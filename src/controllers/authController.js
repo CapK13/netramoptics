@@ -11,6 +11,9 @@ const generateToken = (id) => {
   });
 };
 
+console.log("new one");
+
+
 // Setup nodemailer transport (you can switch to SendGrid, Mailgun, etc.)
 const transporter = nodemailer.createTransport({
   service: 'gmail',
