@@ -2,14 +2,19 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
+    mongoose.set('strictQuery', true); // Optional but recommended
+
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('MongoDB Connected');
+
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    }
   } catch (error) {
-    console.error('MongoDB connection failed:', error.message);
-    process.exit(1);
+    console.error('❌ MongoDB connection failed:', error.message);
+    process.exit(1); // Exit process with failure
   }
 };
 
