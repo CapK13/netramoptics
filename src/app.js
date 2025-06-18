@@ -7,6 +7,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const orderRoutes = require('./routes/orderRoutes'); // Use only this
 const mongodb = require('mongodb').MongoClient;
+
 // Load env variables
 dotenv.config();
 
@@ -14,17 +15,25 @@ dotenv.config();
 connectDB();
 const app = express();
 
+// ✅ Updated CORS configuration
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://www.netramoptic.com'
+];
+
 const corsOptions = {
-  origin: 'http://localhost:5173',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 };
 
-// app.use(cors());
 app.use(cors(corsOptions));
 app.use(express.json());
-
-// Serve uploaded prescription files
-// app.use(express.static('public'));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -53,8 +62,9 @@ app.get("/fetchData", (req, res) => {
 
   }).catch((err) => {
     console.log("connection error");
+    res.status(500).json({ error: "Database connection error" });
   });
-})
+});
 
 // Start Server
 const PORT = process.env.PORT || 5000;
