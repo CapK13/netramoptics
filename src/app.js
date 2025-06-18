@@ -2,61 +2,60 @@ const express = require('express');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const cors = require('cors');
+var conn = null;
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
-const orderRoutes = require('./routes/orderRoutes');
-const profileRoutes = require('./routes/profileRoutes');
-const { MongoClient } = require('mongodb');
-
+const orderRoutes = require('./routes/orderRoutes'); // Use only this
+const mongodb = require('mongodb').MongoClient;
+// Load env variables
 dotenv.config();
 
-const app = express();
+// Connect to MongoDB
 connectDB();
+const app = express();
 
 const corsOptions = {
-  origin: process.env.FRONTEND_ORIGIN || 'https://www.netramoptic.com',
+  origin: 'http://localhost:5173',
   credentials: true,
 };
 
+// app.use(cors());
 app.use(cors(corsOptions));
 app.use(express.json());
+
+// Serve uploaded prescription files
+// app.use(express.static('public'));
 
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/profile', profileRoutes);
+app.use('/api/profile', require('./routes/profileRoutes'));
 
-// Health Check
 app.get('/', (req, res) => {
-  res.json({ status: 'API is running' });
+  res.json({ "Status": "Working" });
 });
 
-// MongoDB fetchData route
-app.get('/fetchData', async (req, res) => {
-  let client;
-  try {
-    client = await MongoClient.connect(process.env.MONGO_URI);
-    const db = client.db('netramoptics');
+app.get("/fetchData", (req, res) => {
+  mongodb.connect(process.env.MONGO_URI).then(async (db) => {
+    conn = await db.db("netramoptics");
 
-    const [frames, goggles, readingGlasses] = await Promise.all([
-      db.collection('frames').find({}).toArray(),
-      db.collection('goggles').find({}).toArray(),
-      db.collection('reading_glasses').find({}).toArray(),
-    ]);
+    const frames = await conn.collection('frames').find({}).toArray();
+    const goggles = await conn.collection('goggles').find({}).toArray();
+    const readingGlasses = await conn.collection('reading_glasses').find({}).toArray();
 
-    res.status(200).json({
+    const response = {
       frames,
       goggles,
-      reading_glasses: readingGlasses,
-    });
-  } catch (err) {
-    console.error('Error fetching data:', err.message);
-    res.status(500).json({ message: 'Server error while fetching data' });
-  } finally {
-    if (client) client.close();
-  }
-});
+      reading_glasses: readingGlasses
+    };
 
-// Start server
+    res.status(200).json(response);
+
+  }).catch((err) => {
+    console.log("connection error");
+  });
+})
+
+// Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

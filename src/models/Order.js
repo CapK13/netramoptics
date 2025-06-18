@@ -1,3 +1,5 @@
+// const mongoose = require('mongoose');
+
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
@@ -6,8 +8,8 @@ const orderSchema = new mongoose.Schema({
     ref: 'User',
     required: true,
   },
-  items: [
-    {
+  items: [ // was cartItems
+    {     
       name: String,
       image: String,
       price: Number,
@@ -15,41 +17,40 @@ const orderSchema = new mongoose.Schema({
       category: String,
       lensType: String,
       prescription: mongoose.Schema.Types.Mixed,
-    },
-  ],
+    },        
+  ],         
   prescriptionType: {
     type: String,
     required: true,
-  },
-  prescriptionFile: {
+  },                                      
+  prescriptionFile: {   
     type: String,
     default: '',
   },
-  totalAmount: {
-    type: Number,
-    required: true,
-  },
-  userData: {
+  totalAmount: Number,
+  userData: { 
     fullName: { type: String, required: true },
-    email: { 
-      type: String, 
-      required: true,
-      match: [/\S+@\S+\.\S+/, 'Please enter a valid email'],
-    },
+    email: { type: String, required: true },
     address: { type: String, required: true },
     phone: { type: String, required: true },
     city: { type: String, required: true },
     pincode: { type: String, required: true },
-  },
+  },  
   paymentMethod: {
-    type: String,
+      type: String,
     enum: ['cod', 'online'],
     required: true,
-  },
+  },  
   status: {
     type: String,
     default: 'Pending',
+  },    
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
-}, { timestamps: true });
+});
 
+
+module.exports = mongoose.model('Order', orderSchema);
 module.exports = mongoose.model('Order', orderSchema);
